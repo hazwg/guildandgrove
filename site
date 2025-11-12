@@ -1,6 +1,16 @@
-git init
-git add -A
-git commit -m "Initial site"
-git branch -M main
-git remote add origin https://github.com/hazwg/REPO_NAME.git
-git push -u origin main
+guild-and-grove/
+├─ public/
+│  ├─ robots.txt
+│  └─ sitemap.xml
+├─ src/
+│  ├─ App.jsx           ← your Guild & Grove React component (from the canvas)
+│  ├─ main.jsx          ← mounts <App /> to #root
+│  └─ index.css         ← Tailwind imports
+├─ index.html
+├─ package.json
+├─ vite.config.js
+├─ tailwind.config.js
+├─ postcss.config.js
+└─ .github/
+   └─ workflows/
+      └─ deploy.yml     ← (GitHub Pages workflow)
