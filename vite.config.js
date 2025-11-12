@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react'
 // If you use a custom domain or user site, change to base: '/'
 export default defineConfig({
   plugins: [react()],
-  base: '/guild-and-grove/',
+  base: '/guildandgrove/',
 })
