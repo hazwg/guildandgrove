@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Disallow admin or system paths (add as needed)
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://www.guildandgrove.com/sitemap.xml
