@@ -107,32 +107,89 @@ const FooterLink = ({ href = "#", children }) => (
   </a>
 );
 
-// --- Agency Fees Savings Calculator (Hero card replacement)
+// --- Agency Fees Savings Calculator (enhanced)
 const AgencySavingsCalculator = () => {
   const [hires, setHires] = useState(20);
   const [salary, setSalary] = useState(60000);
   const [percent, setPercent] = useState(20);
+  const [currency, setCurrency] = useState("GBP"); // "GBP" | "EUR" | "USD"
+
+  // Map currency -> locale for nicer grouping/formatting
+  const LOCALES = { GBP: "en-GB", EUR: "de-DE", USD: "en-US" };
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("gg-agency-calc") || "{}");
+      if (saved && typeof saved === "object") {
+        if (Number.isFinite(saved.hires)) setHires(saved.hires);
+        if (Number.isFinite(saved.salary)) setSalary(saved.salary);
+        if (Number.isFinite(saved.percent)) setPercent(saved.percent);
+        if (typeof saved.currency === "string") setCurrency(saved.currency);
+      }
+    } catch {}
+  }, []);
+
+  // Persist on change
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "gg-agency-calc",
+        JSON.stringify({ hires, salary, percent, currency })
+      );
+    } catch {}
+  }, [hires, salary, percent, currency]);
 
   const safeNum = (v, def = 0) => {
     const n = Number(v);
     return Number.isFinite(n) ? n : def;
   };
 
-  const fees =
-    Math.max(0, safeNum(hires)) *
-    Math.max(0, safeNum(salary)) *
-    (Math.max(0, safeNum(percent)) / 100);
+  const _hires = Math.max(0, safeNum(hires));
+  const _salary = Math.max(0, safeNum(salary));
+  const _percent = Math.max(0, Math.min(100, safeNum(percent)));
 
-  const savingsLow = fees * 0.4; // 40% reduction
-  const savingsHigh = fees * 0.7; // 70% reduction
-  const perHire = hires > 0 ? fees / hires : 0;
+  const fees = _hires * _salary * (_percent / 100); // annual total fees
+  const savings40 = fees * 0.4;
+  const savings70 = fees * 0.7;
+  const perHire = _hires > 0 ? fees / _hires : 0;
 
   const fmt = (n) =>
-    new Intl.NumberFormat("en-GB", {
+    new Intl.NumberFormat(LOCALES[currency] || "en-GB", {
       style: "currency",
-      currency: "GBP",
+      currency,
       maximumFractionDigits: 0,
     }).format(isFinite(n) ? n : 0);
+
+  const reset = () => {
+    setHires(20);
+    setSalary(60000);
+    setPercent(20);
+    setCurrency("GBP");
+    try { localStorage.removeItem("gg-agency-calc"); } catch {}
+  };
+
+  const downloadCsv = () => {
+    const rows = [
+      ["Hires per year", _hires],
+      ["Average salary", _salary],
+      ["Agency %", _percent + "%"],
+      ["Estimated annual fees", fees],
+      ["Per-hire fee", perHire],
+      ["Savings (40%)", savings40],
+      ["Savings (70%)", savings70],
+      ["Currency", currency],
+    ];
+    const csv =
+      "data:text/csv;charset=utf-8," +
+      rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const a = document.createElement("a");
+    a.href = csv;
+    a.download = "agency-fees-estimate.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
 
   return (
     <div
@@ -145,6 +202,7 @@ const AgencySavingsCalculator = () => {
           <Badge>Estimator</Badge>
         </div>
 
+        {/* Inputs */}
         <div className="grid grid-cols-3 gap-3">
           <label className="text-xs text-emerald-900/80">
             Hires / year
@@ -158,7 +216,7 @@ const AgencySavingsCalculator = () => {
             />
           </label>
           <label className="text-xs text-emerald-900/80">
-            Avg salary (£)
+            Avg salary
             <input
               type="number"
               min={0}
@@ -182,6 +240,40 @@ const AgencySavingsCalculator = () => {
           </label>
         </div>
 
+        {/* Currency + actions */}
+        <div className="flex items-center justify-between gap-3">
+          <label className="text-xs text-emerald-900/80">
+            Currency
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="mt-1 w-28 rounded-lg border border-emerald-900/20 bg-white px-2 py-1 text-sm outline-none ring-emerald-600 focus:ring"
+            >
+              <option value="GBP">GBP £</option>
+              <option value="EUR">EUR €</option>
+              <option value="USD">USD $</option>
+            </select>
+          </label>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={downloadCsv}
+              className="rounded-xl border border-emerald-900/20 bg-white px-3 py-1.5 text-xs font-medium text-emerald-900 hover:bg-white/80"
+            >
+              Download CSV
+            </button>
+            <button
+              type="button"
+              onClick={reset}
+              className="rounded-xl border border-emerald-900/20 bg-white px-3 py-1.5 text-xs font-medium text-emerald-900 hover:bg-white/80"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        {/* Results */}
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-xl bg-emerald-50 p-4 ring-1 ring-emerald-700/10">
             <div className="text-xs text-emerald-900/70">Estimated annual fees</div>
@@ -191,8 +283,8 @@ const AgencySavingsCalculator = () => {
           <div className="rounded-xl bg-emerald-50 p-4 ring-1 ring-emerald-700/10">
             <div className="text-xs text-emerald-900/70">Potential savings</div>
             <div className="mt-1 text-sm text-emerald-900">
-              <div><span className="text-emerald-700 font-semibold">40%</span> → {fmt(savingsLow)}</div>
-              <div className="mt-1"><span className="text-emerald-700 font-semibold">70%</span> → {fmt(savingsHigh)}</div>
+              <div><span className="text-emerald-700 font-semibold">40%</span> → {fmt(savings40)}</div>
+              <div className="mt-1"><span className="text-emerald-700 font-semibold">70%</span> → {fmt(savings70)}</div>
             </div>
           </div>
         </div>
