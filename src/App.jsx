@@ -107,30 +107,25 @@ const FooterLink = ({ href = "#", children }) => (
   </a>
 );
 
-// --- Agency Fees Savings Calculator (enhanced)
+/* -----------------------  Agency Fees Savings Calculator  ----------------------- */
 const AgencySavingsCalculator = () => {
   const [hires, setHires] = useState(20);
   const [salary, setSalary] = useState(60000);
   const [percent, setPercent] = useState(20);
   const [currency, setCurrency] = useState("GBP"); // "GBP" | "EUR" | "USD"
-
-  // Map currency -> locale for nicer grouping/formatting
   const LOCALES = { GBP: "en-GB", EUR: "de-DE", USD: "en-US" };
 
-  // Load from localStorage on mount
+  // Load from storage
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("gg-agency-calc") || "{}");
-      if (saved && typeof saved === "object") {
-        if (Number.isFinite(saved.hires)) setHires(saved.hires);
-        if (Number.isFinite(saved.salary)) setSalary(saved.salary);
-        if (Number.isFinite(saved.percent)) setPercent(saved.percent);
-        if (typeof saved.currency === "string") setCurrency(saved.currency);
-      }
+      if (Number.isFinite(saved?.hires)) setHires(saved.hires);
+      if (Number.isFinite(saved?.salary)) setSalary(saved.salary);
+      if (Number.isFinite(saved?.percent)) setPercent(saved.percent);
+      if (typeof saved?.currency === "string") setCurrency(saved.currency);
     } catch {}
   }, []);
-
-  // Persist on change
+  // Persist
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -140,16 +135,12 @@ const AgencySavingsCalculator = () => {
     } catch {}
   }, [hires, salary, percent, currency]);
 
-  const safeNum = (v, def = 0) => {
-    const n = Number(v);
-    return Number.isFinite(n) ? n : def;
-  };
+  const safe = (n, d = 0) => (Number.isFinite(+n) ? +n : d);
+  const _hires = Math.max(0, safe(hires));
+  const _salary = Math.max(0, safe(salary));
+  const _percent = Math.max(0, Math.min(100, safe(percent)));
 
-  const _hires = Math.max(0, safeNum(hires));
-  const _salary = Math.max(0, safeNum(salary));
-  const _percent = Math.max(0, Math.min(100, safeNum(percent)));
-
-  const fees = _hires * _salary * (_percent / 100); // annual total fees
+  const fees = _hires * _salary * (_percent / 100);
   const savings40 = fees * 0.4;
   const savings70 = fees * 0.7;
   const perHire = _hires > 0 ? fees / _hires : 0;
@@ -166,14 +157,16 @@ const AgencySavingsCalculator = () => {
     setSalary(60000);
     setPercent(20);
     setCurrency("GBP");
-    try { localStorage.removeItem("gg-agency-calc"); } catch {}
+    try {
+      localStorage.removeItem("gg-agency-calc");
+    } catch {}
   };
 
   const downloadCsv = () => {
     const rows = [
       ["Hires per year", _hires],
       ["Average salary", _salary],
-      ["Agency %", _percent + "%"],
+      ["Agency %", `${_percent}%`],
       ["Estimated annual fees", fees],
       ["Per-hire fee", perHire],
       ["Savings (40%)", savings40],
@@ -182,7 +175,9 @@ const AgencySavingsCalculator = () => {
     ];
     const csv =
       "data:text/csv;charset=utf-8," +
-      rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+      rows
+        .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+        .join("\n");
     const a = document.createElement("a");
     a.href = csv;
     a.download = "agency-fees-estimate.csv";
@@ -303,6 +298,7 @@ const AgencySavingsCalculator = () => {
     </div>
   );
 };
+/* ----------------------------------------------------------------------------- */
 
 const Logo = () => (
   <div className="flex items-center gap-2">
@@ -331,7 +327,7 @@ function useScroll() {
   return scrolled;
 }
 
-// Self-tests (non-blocking) to catch missing sections in dev
+// Self-tests (non-blocking)
 function runSelfTests() {
   const requiredIds = ["services","approach","outcomes","programs","resources","about","contact"];
   requiredIds.forEach((id) => {
@@ -344,15 +340,12 @@ function runSelfTests() {
   console.assert(document.getElementById("agency-calc"), "Agency calculator missing (self-test)");
 }
 
-// Lightweight SEO component without external deps
+// Lightweight SEO helper
 function Seo() {
   useEffect(() => {
     const setMeta = (selector, attr, value) => {
       let el = document.head.querySelector(selector);
-      if (!el) {
-        el = document.createElement("meta");
-        document.head.appendChild(el);
-      }
+      if (!el) { el = document.createElement("meta"); document.head.appendChild(el); }
       el.setAttribute(attr, value);
     };
 
@@ -361,19 +354,14 @@ function Seo() {
 
     document.title = "Guild & Grove | Grow in-house hiring mastery";
 
-    // Viewport
     setMeta('meta[name="viewport"]', "name", "viewport");
     setMeta('meta[name="viewport"]', "content", "width=device-width, initial-scale=1");
 
-    // Description
     setMeta('meta[name="description"]', "name", "description");
-    setMeta(
-      'meta[name="description"]',
-      "content",
+    setMeta('meta[name="description"]', "content",
       "Guild & Grove is a people-strategy advisory that designs, builds, and upskills in-house recruitment so companies hire better—without agencies."
     );
 
-    // Canonical
     let linkCanonical = document.head.querySelector('link[rel="canonical"]');
     if (!linkCanonical) {
       linkCanonical = document.createElement("link");
@@ -382,7 +370,6 @@ function Seo() {
     }
     linkCanonical.setAttribute("href", canonicalHref);
 
-    // Open Graph
     [
       ["og:title", "Guild & Grove | Grow in-house hiring mastery"],
       ["og:description", "We build self-sustaining recruitment capability: operating model, training, and governance."],
@@ -395,7 +382,6 @@ function Seo() {
       el.setAttribute("content", content);
     });
 
-    // Twitter
     [
       ["twitter:card", "summary_large_image"],
       ["twitter:title", "Guild & Grove | Grow in-house hiring mastery"],
@@ -407,7 +393,6 @@ function Seo() {
       el.setAttribute("content", content);
     });
 
-    // Sitemap link (optional)
     let linkSitemap = document.head.querySelector('link[rel="sitemap"]');
     if (!linkSitemap) {
       linkSitemap = document.createElement("link");
@@ -417,7 +402,6 @@ function Seo() {
     linkSitemap.setAttribute("type", "application/xml");
     linkSitemap.setAttribute("href", canonicalHref + "sitemap.xml");
 
-    // JSON-LD
     const jsonLd = {
       "@context": "https://schema.org",
       "@graph": [
@@ -451,7 +435,6 @@ function Seo() {
     }
     ldScript.textContent = JSON.stringify(jsonLd);
 
-    // Robots
     setMeta('meta[name="robots"]', "name", "robots");
     setMeta('meta[name="robots"]', "content", "index,follow");
   }, []);
@@ -522,7 +505,7 @@ export default function Website() {
               </div>
             </div>
 
-            {/* Replace hero card with calculator */}
+            {/* Calculator in the hero */}
             <div className="relative">
               <AgencySavingsCalculator />
             </div>
@@ -561,18 +544,28 @@ export default function Website() {
             <ListItem icon={Layers} title="Operating Model &amp; Process Design">
               Role charters, RACI, structured intake, interviewing discipline, decision rights, offer stages, SLAs—codified and adopted.
             </ListItem>
+
             <ListItem icon={Hammer} title="Recruitment-in-a-Box (90 days)">
               Stand up an in-house function fast: ATS setup, templates, playbooks, interview kits, and hiring-manager training.
             </ListItem>
+
+            <ListItem icon={Users} title="Embedded Talent Partner (FT or Fractional)">
+              A senior recruiter embedded in your team to own live requisitions, coach hiring managers, and operationalise best practice—
+              available full-time or part-time. Includes pipeline ownership, hiring plan rhythms, and reporting.
+            </ListItem>
+
             <ListItem icon={BookOpen} title="Capability Uplift">
               Recruiter academies and hiring-manager certification—sourcing, assessment, and employer brand in modern practice.
             </ListItem>
+
             <ListItem icon={Shield} title="Data &amp; Governance">
               Metrics pack (TTH, quality-of-hire, funnel diagnostics), DEI safeguards, and compliance aligned to your regions.
             </ListItem>
+
             <ListItem icon={LineChart} title="Continuous Optimization">
               Quarterly audits, retros, experiments, and coach-alongside support to keep outcomes improving.
             </ListItem>
+
             <ListItem icon={Brain} title="Advisory on Change &amp; Adoption">
               Human-centered change so new ways of working actually stick—playbooks to practice to performance.
             </ListItem>
