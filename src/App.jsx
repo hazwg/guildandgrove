@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { { ArrowRight, Badge /* …other icons you already have */ } from "lucide-react";
+import {
   Check,
   ArrowRight,
   Leaf,
