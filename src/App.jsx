@@ -19,8 +19,9 @@ import {
   Cog,
 } from "lucide-react";
 
-// Guild & Grove — Single-file React site
-// Sections: Nav, Hero (+ Calculator), Social Proof, Services, Approach, Outcomes, Programs, Resources, About, Contact, Footer
+/* ============================================================================
+   Guild & Grove — Single-file React site
+   ============================================================================ */
 
 const nav = [
   { label: "Services", href: "#services" },
@@ -78,7 +79,7 @@ const CTA = ({ href = "#contact", children = "Book a Free Recruitment Audit" }) 
   </a>
 );
 
-const Secondary = ({ href = "#services", children = "Explore Our Operating Model" }) => (
+const Secondary = ({ href = "#services", children = "See programs" }) => (
   <a
     href={href}
     className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-900/20 bg-white/70 px-5 py-3 text-emerald-900 shadow-sm transition hover:bg-white"
@@ -329,7 +330,7 @@ function useScroll() {
 
 // Self-tests (non-blocking)
 function runSelfTests() {
-  const requiredIds = ["services","approach","outcomes","programs","resources","about","contact"];
+  const requiredIds = ["services", "approach", "outcomes", "programs", "resources", "about", "contact"];
   requiredIds.forEach((id) => {
     // eslint-disable-next-line no-console
     console.assert(document.getElementById(id), `Missing section #${id} (self-test)`);
@@ -345,7 +346,10 @@ function Seo() {
   useEffect(() => {
     const setMeta = (selector, attr, value) => {
       let el = document.head.querySelector(selector);
-      if (!el) { el = document.createElement("meta"); document.head.appendChild(el); }
+      if (!el) {
+        el = document.createElement("meta");
+        document.head.appendChild(el);
+      }
       el.setAttribute(attr, value);
     };
 
@@ -358,7 +362,9 @@ function Seo() {
     setMeta('meta[name="viewport"]', "content", "width=device-width, initial-scale=1");
 
     setMeta('meta[name="description"]', "name", "description");
-    setMeta('meta[name="description"]', "content",
+    setMeta(
+      'meta[name="description"]',
+      "content",
       "Guild & Grove is a people-strategy advisory that designs, builds, and upskills in-house recruitment so companies hire better—without agencies."
     );
 
@@ -377,7 +383,10 @@ function Seo() {
       ["og:url", canonicalHref],
     ].forEach(([property, content]) => {
       let el = document.head.querySelector(`meta[property="${property}"]`);
-      if (!el) { el = document.createElement("meta"); document.head.appendChild(el); }
+      if (!el) {
+        el = document.createElement("meta");
+        document.head.appendChild(el);
+      }
       el.setAttribute("property", property);
       el.setAttribute("content", content);
     });
@@ -388,7 +397,10 @@ function Seo() {
       ["twitter:description", "Design the system. Train the people. Govern the outcomes."],
     ].forEach(([name, content]) => {
       let el = document.head.querySelector(`meta[name="${name}"]`);
-      if (!el) { el = document.createElement("meta"); document.head.appendChild(el); }
+      if (!el) {
+        el = document.createElement("meta");
+        document.head.appendChild(el);
+      }
       el.setAttribute("name", name);
       el.setAttribute("content", content);
     });
@@ -443,11 +455,14 @@ function Seo() {
 
 export default function Website() {
   const scrolled = useScroll();
-  useEffect(() => { runSelfTests(); }, []);
+  useEffect(() => {
+    runSelfTests();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#E6DECF] text-emerald-950">
       <Seo />
+
       {/* NAV */}
       <header
         className={`sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/60 ${
@@ -461,7 +476,11 @@ export default function Website() {
             </a>
             <nav className="hidden gap-6 md:flex" aria-label="Primary">
               {nav.map((n) => (
-                <a key={n.href} href={n.href} className="text-sm font-medium text-emerald-900/90 hover:text-emerald-900">
+                <a
+                  key={n.href}
+                  href={n.href}
+                  className="text-sm font-medium text-emerald-900/90 hover:text-emerald-900"
+                >
                   {n.label}
                 </a>
               ))}
@@ -493,8 +512,11 @@ export default function Website() {
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <CTA />
-                <Secondary />
-                <a href="#video" className="inline-flex items-center gap-2 text-sm font-medium text-emerald-900/80 hover:text-emerald-900">
+                <Secondary href="#programs">See programs</Secondary>
+                <a
+                  href="#video"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-emerald-900/80 hover:text-emerald-900"
+                >
                   <PlayCircle className="h-5 w-5" /> See a 90-second overview
                 </a>
               </div>
@@ -504,8 +526,6 @@ export default function Website() {
                 <Stat value="15–25pts" label="↑ Hiring Manager NPS" />
               </div>
             </div>
-
-            {/* Calculator in the hero */}
             <div className="relative">
               <AgencySavingsCalculator />
             </div>
@@ -522,10 +542,23 @@ export default function Website() {
       <section className="border-y border-emerald-900/10 bg-white/60">
         <div className="mx-auto max-w-7xl px-4 py-10">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <p className="text-sm text-emerald-900/70">Trusted by people-first teams to hire 3× faster</p>
+            <p className="text-sm text-emerald-900/70">
+              Trusted by people-first teams to hire 3× faster
+            </p>
             <div className="flex flex-wrap items-center gap-4 opacity-70">
-              {["Northbridge Capital","Atlas Health","Keystone Tech","Stratum FinOps","Vector Labs"].map((n) => (
-                <span key={n} className="rounded-xl border border-emerald-900/10 bg-white px-3 py-1 text-xs">{n}</span>
+              {[
+                "Northbridge Capital",
+                "Atlas Health",
+                "Keystone Tech",
+                "Stratum FinOps",
+                "Vector Labs",
+              ].map((n) => (
+                <span
+                  key={n}
+                  className="rounded-xl border border-emerald-900/10 bg-white px-3 py-1 text-xs"
+                >
+                  {n}
+                </span>
               ))}
             </div>
           </div>
@@ -537,42 +570,53 @@ export default function Website() {
         <div className="mx-auto max-w-7xl px-4 py-16">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Services</h2>
-            <p className="mt-3 text-emerald-900/80">Strategy-first, non-agency support. We build capability, not dependency.</p>
+            <p className="mt-3 text-emerald-900/80">
+              Strategy-first, non-agency support. We build capability, not
+              dependency.
+            </p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             <ListItem icon={Layers} title="Operating Model &amp; Process Design">
-              Role charters, RACI, structured intake, interviewing discipline, decision rights, offer stages, SLAs—codified and adopted.
+              Role charters, RACI, structured intake, interviewing discipline,
+              decision rights, offer stages, SLAs—codified and adopted.
             </ListItem>
 
             <ListItem icon={Hammer} title="Recruitment-in-a-Box (90 days)">
-              Stand up an in-house function fast: ATS setup, templates, playbooks, interview kits, and hiring-manager training.
+              Stand up an in-house function fast: ATS setup, templates,
+              playbooks, interview kits, and hiring-manager training.
             </ListItem>
 
             <ListItem icon={Users} title="Embedded Talent Partner (FT or Fractional)">
-              A senior recruiter embedded in your team to own live requisitions, coach hiring managers, and operationalise best practice—
-              available full-time or part-time. Includes pipeline ownership, hiring plan rhythms, and reporting.
+              A senior recruiter embedded in your team to own live requisitions,
+              coach hiring managers, and operationalise best practice—available
+              full-time or part-time. Includes pipeline ownership, hiring plan
+              rhythms, and reporting.
             </ListItem>
 
             <ListItem icon={BookOpen} title="Capability Uplift">
-              Recruiter academies and hiring-manager certification—sourcing, assessment, and employer brand in modern practice.
+              Recruiter academies and hiring-manager certification—sourcing,
+              assessment, and employer brand in modern practice.
             </ListItem>
 
-         <ListItem icon={Shield} title="Data &amp; Governance">
-  Metrics pack (TTH, quality-of-hire, funnel diagnostics), DEI safeguards, and compliance aligned to your regions.
-</ListItem>
+            <ListItem icon={Shield} title="Data &amp; Governance">
+              Metrics pack (TTH, quality-of-hire, funnel diagnostics), DEI
+              safeguards, and compliance aligned to your regions.
+            </ListItem>
 
-<ListItem icon={LineChart} title="Continuous Optimization">
-  Quarterly audits, retros, experiments, and coach-alongside support to keep outcomes improving.
-</ListItem>
+            <ListItem icon={LineChart} title="Continuous Optimization">
+              Quarterly audits, retros, experiments, and coach-alongside support
+              to keep outcomes improving.
+            </ListItem>
 
-{/* spacer so Advisory sits under Data & Governance on md+ screens */}
-<div className="hidden md:block" aria-hidden />
+            {/* spacer so Advisory sits under Data & Governance on md+ screens */}
+            <div className="hidden md:block" aria-hidden />
 
-<ListItem icon={Brain} title="Advisory on Change &amp; Adoption">
-  Human-centered change so new ways of working actually stick—playbooks to practice to performance.
-</ListItem>
-
+            <ListItem icon={Brain} title="Advisory on Change &amp; Adoption">
+              Human-centered change so new ways of working actually stick—
+              playbooks to practice to performance.
+            </ListItem>
+          </div>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <CTA />
@@ -586,14 +630,25 @@ export default function Website() {
         <div className="mx-auto max-w-7xl px-4 py-16">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Approach</h2>
-            <p className="mt-3 text-emerald-900/80">Diagnose → Design → Enable → Govern. We leave you with skills, not dependencies.</p>
+            <p className="mt-3 text-emerald-900/80">
+              Diagnose → Design → Enable → Govern. We leave you with skills, not
+              dependencies.
+            </p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-4">
-            <ListItem icon={Compass} title="Diagnose">Baseline metrics, process map, pain points, and benchmarks.</ListItem>
-            <ListItem icon={Layers} title="Design">Operating model, governance, toolchain, interview architecture.</ListItem>
-            <ListItem icon={Users} title="Enable">Training, coaching, and change management for adoption.</ListItem>
-            <ListItem icon={Cog} title="Govern">SLAs, dashboards, reviews, and iteration cadence.</ListItem>
+            <ListItem icon={Compass} title="Diagnose">
+              Baseline metrics, process map, pain points, and benchmarks.
+            </ListItem>
+            <ListItem icon={Layers} title="Design">
+              Operating model, governance, toolchain, interview architecture.
+            </ListItem>
+            <ListItem icon={Users} title="Enable">
+              Training, coaching, and change management for adoption.
+            </ListItem>
+            <ListItem icon={Cog} title="Govern">
+              SLAs, dashboards, reviews, and iteration cadence.
+            </ListItem>
           </div>
         </div>
       </section>
@@ -603,7 +658,9 @@ export default function Website() {
         <div className="mx-auto max-w-7xl px-4 py-16">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Outcomes</h2>
-            <p className="mt-3 text-emerald-900/80">What we measure and improve—then hand over for you to own.</p>
+            <p className="mt-3 text-emerald-900/80">
+              What we measure and improve—then hand over for you to own.
+            </p>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             <div className="rounded-2xl border border-emerald-900/10 bg-white/60 p-6">
@@ -636,7 +693,9 @@ export default function Website() {
         <div className="mx-auto max-w-7xl px-4 py-16">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Programs</h2>
-            <p className="mt-3 text-emerald-900/80">Choose the engagement that fits your stage and scale.</p>
+            <p className="mt-3 text-emerald-900/80">
+              Choose the engagement that fits your stage and scale.
+            </p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -645,7 +704,8 @@ export default function Website() {
               <Badge>Lead-in</Badge>
               <h4 className="mt-2 font-semibold">Free Recruitment Audit</h4>
               <p className="mt-2 text-sm text-emerald-900/80">
-                60-minute review + 1-page findings: bottlenecks, quick wins, and a prioritized roadmap.
+                60-minute review + 1-page findings: bottlenecks, quick wins, and a
+                prioritized roadmap.
               </p>
               <ul className="mt-4 space-y-2">
                 <CheckRow>Process map &amp; funnel snapshot</CheckRow>
@@ -662,7 +722,8 @@ export default function Website() {
               <Badge>Project</Badge>
               <h4 className="mt-2 font-semibold">Core Transformation (6–12 weeks)</h4>
               <p className="mt-2 text-sm text-emerald-900/80">
-                Diagnose, Design, Enable. Stand-up or overhaul your in-house function with measurable SLAs.
+                Diagnose, Design, Enable. Stand-up or overhaul your in-house
+                function with measurable SLAs.
               </p>
               <ul className="mt-4 space-y-2">
                 <CheckRow>Operating model &amp; governance</CheckRow>
@@ -679,7 +740,8 @@ export default function Website() {
               <Badge>Retainer</Badge>
               <h4 className="mt-2 font-semibold">Quarterly Stewardship</h4>
               <p className="mt-2 text-sm text-emerald-900/80">
-                Ongoing metrics reviews, experiments, and coaching to sustain and extend gains.
+                Ongoing metrics reviews, experiments, and coaching to sustain and
+                extend gains.
               </p>
               <ul className="mt-4 space-y-2">
                 <CheckRow>Quarterly audits &amp; roadmap</CheckRow>
@@ -699,20 +761,37 @@ export default function Website() {
         <div className="mx-auto max-w-7xl px-4 py-16">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Resources</h2>
-            <p className="mt-3 text-emerald-900/80">Playbooks, templates, and case notes to put mastery into practice.</p>
+            <p className="mt-3 text-emerald-900/80">
+              Playbooks, templates, and case notes to put mastery into practice.
+            </p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {[
-              { title: "Structured Interview Kit", desc: "Role scorecards, questions, rubrics, and decision logs." },
-              { title: "Recruitment Metrics Pack", desc: "Dashboards for TTH, funnel, quality-of-hire, and NPS." },
-              { title: "Operating Model Blueprint", desc: "RACI, SLAs, intake flow, and governance cadence." },
+              {
+                title: "Structured Interview Kit",
+                desc: "Role scorecards, questions, rubrics, and decision logs.",
+              },
+              {
+                title: "Recruitment Metrics Pack",
+                desc: "Dashboards for TTH, funnel, quality-of-hire, and NPS.",
+              },
+              {
+                title: "Operating Model Blueprint",
+                desc: "RACI, SLAs, intake flow, and governance cadence.",
+              },
             ].map((r) => (
-              <div key={r.title} className="rounded-2xl border border-emerald-900/10 bg-white/60 p-6">
+              <div
+                key={r.title}
+                className="rounded-2xl border border-emerald-900/10 bg-white/60 p-6"
+              >
                 <h4 className="font-semibold">{r.title}</h4>
                 <p className="mt-2 text-sm text-emerald-900/80">{r.desc}</p>
                 <div className="mt-4">
-                  <a href="#contact" className="inline-flex items-center gap-2 text-sm font-medium text-emerald-900/90 hover:text-emerald-900">
+                  <a
+                    href="#contact"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-emerald-900/90 hover:text-emerald-900"
+                  >
                     Request access <ArrowRight className="h-4 w-4" />
                   </a>
                 </div>
@@ -729,8 +808,10 @@ export default function Website() {
             <div>
               <h2 className="font-serif text-3xl sm:text-4xl">About Guild &amp; Grove</h2>
               <p className="mt-4 text-emerald-900/80">
-                We’re a people-strategy advisory focused on building in-house recruitment capability. We bring operating
-                discipline, practical training, and governance so teams hire faster, fairer, and more cost-effectively—sustainably.
+                We’re a people-strategy advisory focused on building in-house
+                recruitment capability. We bring operating discipline, practical
+                training, and governance so teams hire faster, fairer, and more
+                cost-effectively—sustainably.
               </p>
               <ul className="mt-6 space-y-3">
                 <CheckRow>Capability over dependency</CheckRow>
@@ -743,7 +824,8 @@ export default function Website() {
               <div className="relative overflow-hidden rounded-3xl border border-emerald-900/10 bg-gradient-to-br from-emerald-50 to-white p-8 shadow">
                 <h4 className="font-semibold">Our Promise</h4>
                 <p className="mt-2 text-sm text-emerald-900/80">
-                  We work transparently and leave behind capability: playbooks, trained people, and dashboards you own.
+                  We work transparently and leave behind capability: playbooks,
+                  trained people, and dashboards you own.
                 </p>
                 <div className="mt-6 grid grid-cols-3 gap-4 text-center">
                   <Stat value="90 days" label="Stand-up window" />
@@ -762,36 +844,59 @@ export default function Website() {
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Book a Free Recruitment Audit</h2>
             <p className="mt-3 text-emerald-900/80">
-              Tell us about your hiring goals. We’ll review your process, surface quick wins, and map a path to in-house mastery.
+              Tell us about your hiring goals. We’ll review your process, surface
+              quick wins, and map a path to in-house mastery.
             </p>
           </div>
 
           <div className="mt-10 grid gap-8 md:grid-cols-2">
-            <form onSubmit={(e) => e.preventDefault()} className="rounded-2xl border border-emerald-900/10 bg-white/70 p-6 shadow-sm">
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="rounded-2xl border border-emerald-900/10 bg-white/70 p-6 shadow-sm"
+            >
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="text-sm font-medium">First name</label>
-                  <input className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" placeholder="Alex" />
+                  <input
+                    className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
+                    placeholder="Alex"
+                  />
                 </div>
                 <div>
                   <label className="text-sm font-medium">Last name</label>
-                  <input className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" placeholder="Morgan" />
+                  <input
+                    className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
+                    placeholder="Morgan"
+                  />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-sm font-medium">Work email</label>
-                  <input type="email" className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" placeholder="alex@company.com" />
+                  <input
+                    type="email"
+                    className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
+                    placeholder="alex@company.com"
+                  />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-sm font-medium">Company</label>
-                  <input className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" placeholder="Company Name" />
+                  <input
+                    className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
+                    placeholder="Company Name"
+                  />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-sm font-medium">What would you like to improve?</label>
-                  <textarea rows={4} className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" placeholder="Time-to-hire, agency spend, manager experience, DEI safeguards, etc." />
+                  <textarea
+                    rows={4}
+                    className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
+                    placeholder="Time-to-hire, agency spend, manager experience, DEI safeguards, etc."
+                  />
                 </div>
               </div>
               <div className="mt-4 flex items-center justify-between">
-                <div className="text-xs text-emerald-900/70">By submitting, you agree to our privacy policy.</div>
+                <div className="text-xs text-emerald-900/70">
+                  By submitting, you agree to our privacy policy.
+                </div>
                 <button className="inline-flex items-center gap-2 rounded-2xl bg-emerald-700 px-5 py-2.5 text-white shadow-sm transition hover:bg-emerald-800">
                   Send request <ArrowRight className="h-4 w-4" />
                 </button>
@@ -810,23 +915,38 @@ export default function Website() {
                 <Mail className="h-5 w-5 text-emerald-700" />
                 <div>
                   <div className="text-sm font-medium">Email</div>
-                  <a className="text-sm text-emerald-900/70" href="mailto:hello@guildandgrove.com">hello@guildandgrove.com</a>
+                  <a
+                    className="text-sm text-emerald-900/70"
+                    href="mailto:hello@guildandgrove.com"
+                  >
+                    hello@guildandgrove.com
+                  </a>
                 </div>
               </div>
               <div className="mt-4 flex items-center gap-3">
                 <MapPin className="h-5 w-5 text-emerald-700" />
                 <div>
                   <div className="text-sm font-medium">Location</div>
-                  <div className="text-sm text-emerald-900/70">London, United Kingdom</div>
+                  <div className="text-sm text-emerald-900/70">
+                    London, United Kingdom
+                  </div>
                 </div>
               </div>
 
               <div className="mt-8 rounded-xl bg-emerald-50 p-5 ring-1 ring-emerald-700/10">
                 <div className="text-sm font-semibold">Newsletter</div>
-                <p className="mt-1 text-sm text-emerald-900/80">Insights on strategic hiring—monthly. No spam.</p>
+                <p className="mt-1 text-sm text-emerald-900/80">
+                  Insights on strategic hiring—monthly. No spam.
+                </p>
                 <form onSubmit={(e) => e.preventDefault()} className="mt-3 flex gap-2">
-                  <input type="email" placeholder="you@company.com" className="w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" />
-                  <button className="rounded-xl bg-emerald-700 px-4 py-2 text-white hover:bg-emerald-800">Subscribe</button>
+                  <input
+                    type="email"
+                    placeholder="you@company.com"
+                    className="w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
+                  />
+                  <button className="rounded-xl bg-emerald-700 px-4 py-2 text-white hover:bg-emerald-800">
+                    Subscribe
+                  </button>
                 </form>
               </div>
             </div>
@@ -845,11 +965,14 @@ export default function Website() {
                 </div>
                 <div>
                   <div className="font-serif text-xl font-semibold">Guild &amp; Grove</div>
-                  <div className="text-xs text-white/70">Grow in-house hiring mastery</div>
+                  <div className="text-xs text-white/70">
+                    Grow in-house hiring mastery
+                  </div>
                 </div>
               </div>
               <p className="mt-3 text-sm text-white/80 max-w-xs">
-                People-strategy advisory that designs, builds, and upskills in-house recruitment so you hire better—without agencies.
+                People-strategy advisory that designs, builds, and upskills
+                in-house recruitment so you hire better—without agencies.
               </p>
             </div>
             <div>
@@ -872,7 +995,9 @@ export default function Website() {
             <div>
               <div className="text-sm font-semibold">Contact</div>
               <div className="mt-3 grid gap-2">
-                <FooterLink href="mailto:hello@guildandgrove.com">hello@guildandgrove.com</FooterLink>
+                <FooterLink href="mailto:hello@guildandgrove.com">
+                  hello@guildandgrove.com
+                </FooterLink>
                 <FooterLink href="#contact">Book a free audit</FooterLink>
                 <FooterLink href="#contact">Newsletter</FooterLink>
               </div>
