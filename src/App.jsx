@@ -111,6 +111,108 @@ const FooterLink = ({ href = "#", children }) => (
   </a>
 );
 
+// --- New: Agency Fees Savings Calculator (Hero card replacement)
+const AgencySavingsCalculator = () => {
+  const [hires, setHires] = useState(20);
+  const [salary, setSalary] = useState(60000);
+  const [percent, setPercent] = useState(20);
+
+  const safeInt = (v, def = 0) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : def;
+  };
+
+  const fees = Math.max(0, safeInt(hires)) * Math.max(0, safeInt(salary)) * (Math.max(0, safeInt(percent)) / 100);
+  const savingsLow = fees * 0.4; // 40% reduction
+  const savingsHigh = fees * 0.7; // 70% reduction
+  const perHire = hires > 0 ? fees / hires : 0;
+
+  const fmt = (n) =>
+    new Intl.NumberFormat("en-GB", {
+      style: "currency",
+      currency: "GBP",
+      maximumFractionDigits: 0,
+    }).format(isFinite(n) ? n : 0);
+
+  return (
+    <div id="agency-calc" className="relative mx-auto w-full max-w-md overflow-hidden rounded-3xl border border-emerald-900/10 bg-white shadow-xl">
+      <div className="grid gap-4 p-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-semibold text-emerald-900">Agency fees savings</h3>
+          <Badge>Estimator</Badge>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <label className="text-xs text-emerald-900/80">
+            Hires / year
+            <input
+              type="number"
+              min={0}
+              step={1}
+              value={hires}
+              onChange={(e) => setHires(parseInt(e.target.value || "0", 10))}
+              className="mt-1 w-full rounded-lg border border-emerald-900/20 bg-white px-2 py-1 text-sm outline-none ring-emerald-600 focus:ring"
+            />
+          </label>
+          <label className="text-xs text-emerald-900/80">
+            Avg salary (£)
+            <input
+              type="number"
+              min={0}
+              step={1000}
+              value={salary}
+              onChange={(e) => setSalary(parseInt(e.target.value || "0", 10))}
+              className="mt-1 w-full rounded-lg border border-emerald-900/20 bg-white px-2 py-1 text-sm outline-none ring-emerald-600 focus:ring"
+            />
+          </label>
+          <label className="text-xs text-emerald-900/80">
+            Agency %
+            <input
+              type="number"
+              min={0}
+              max={100}
+              step={1}
+              value={percent}
+              onChange={(e) => setPercent(parseInt(e.target.value || "0", 10))}
+              className="mt-1 w-full rounded-lg border border-emerald-900/20 bg-white px-2 py-1 text-sm outline-none ring-emerald-600 focus:ring"
+            />
+          </label>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl bg-emerald-50 p-4 ring-1 ring-emerald-700/10">
+            <div className="text-xs text-emerald-900/70">Estimated annual fees</div>
+            <div className="mt-1 text-xl font-semibold text-emerald-900">{fmt(fees)}</div>
+            <div className="mt-1 text-[11px] text-emerald-900/60">≈ {fmt(perHire)} per hire</div>
+          </div>
+          <div className="rounded-xl bg-emerald-50 p-4 ring-1 ring-emerald-700/10">
+            <div className="text-xs text-emerald-900/70">Potential savings</div>
+            <div className="mt-1 text-sm text-emerald-900">
+              <div><span className="text-emerald-700 font-semibold">40%</span> → {fmt(savingsLow)}</div>
+              <div className="mt-1"><span className="text-emerald-700 font-semibold">70%</span> → {fmt(savingsHigh)}</div>
+            </div>
+          </div>
+        </div>
+
+        <a
+          href="#contact"
+          className="mt-2 inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-700 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+        >
+          Claim your free audit <ArrowRight className="h-4 w-4" />
+        </a>
+
+        <p className="text-[11px] text-emerald-900/60">
+          This estimator multiplies hires × salary × agency%. Savings bands reflect typical reductions after in-house uplift.
+        </p>
+      </div>
+    </div>
+  );
+};
+  <a href={href} className="text-sm text-emerald-100/80 hover:text-white">
+    {children}
+  </a>
+);
+
 const Logo = () => (
   <div className="flex items-center gap-2">
     <div className="grid h-9 w-9 place-content-center rounded-2xl bg-emerald-700 text-white shadow-sm">
@@ -138,6 +240,37 @@ function useScroll() {
   return scrolled;
 }
 
+// Simple runtime "test cases" to validate structure after mount
+function runSelfTests() {
+  const requiredIds = [
+    "services",
+    "approach",
+    "outcomes",
+    "programs",
+    "resources",
+    "about",
+    "contact",
+  ];
+  requiredIds.forEach((id) => {
+    // eslint-disable-next-line no-console
+    console.assert(
+      document.getElementById(id),
+      `Missing section #${id} (self-test)`
+    );
+  });
+  // Check contact form exists
+  // eslint-disable-next-line no-console
+  console.assert(
+    document.querySelector("form"),
+    "Contact form not found (self-test)"
+  );
+  // Calculator present
+  console.assert(
+    document.getElementById("agency-calc"),
+    "Agency calculator missing (self-test)"
+  );
+}
+
 // Lightweight SEO component without external deps
 function Seo() {
   useEffect(() => {
@@ -155,7 +288,7 @@ function Seo() {
 
     document.title = 'Guild & Grove | Grow in-house hiring mastery';
 
-    // Viewport
+    // Viewport (important for mobile + CLS)
     setMeta('meta[name="viewport"]', 'name', 'viewport');
     setMeta('meta[name="viewport"]', 'content', 'width=device-width, initial-scale=1');
 
@@ -199,7 +332,7 @@ function Seo() {
       el.setAttribute('content', content);
     });
 
-    // Optional: sitemap link relation
+    // Optional: sitemap link relation (engines usually discover via robots.txt)
     let linkSitemap = document.head.querySelector('link[rel="sitemap"]');
     if (!linkSitemap) {
       linkSitemap = document.createElement('link');
@@ -209,7 +342,7 @@ function Seo() {
     linkSitemap.setAttribute('type', 'application/xml');
     linkSitemap.setAttribute('href', canonicalHref + 'sitemap.xml');
 
-    // JSON-LD
+    // JSON-LD (Organization + Website)
     const jsonLd = {
       '@context': 'https://schema.org',
       '@graph': [
@@ -247,32 +380,32 @@ function Seo() {
     }
     ldScript.textContent = JSON.stringify(jsonLd);
 
-    // Robots
+    // Robots (advisory; final robots.txt should be at /robots.txt)
     setMeta('meta[name="robots"]', 'name', 'robots');
     setMeta('meta[name="robots"]', 'content', 'index,follow');
+
+    // (Optional) font preloads if you host fonts at /fonts/**
+    // const preload = (href, as) => { const l = document.createElement('link'); l.rel = 'preload'; l.as = as; l.href = href; document.head.appendChild(l); };
+    // preload('/fonts/Inter-Variable.woff2', 'font');
+    // preload('/fonts/LibreBaskerville-Regular.woff2', 'font');
   }, []);
   return null;
 }
 
-// Simple runtime "test cases"
-function runSelfTests() {
-  const requiredIds = ["services","approach","outcomes","programs","resources","about","contact"];
-  requiredIds.forEach((id) => {
-    console.assert(document.getElementById(id), `Missing section #${id} (self-test)`);
-  });
-  console.assert(document.querySelector("form"), "Contact form not found (self-test)");
-}
-
 export default function Website() {
   const scrolled = useScroll();
-  useEffect(() => { runSelfTests(); }, []);
+  useEffect(() => {
+    runSelfTests();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#E6DECF] text-emerald-950">
-      <Seo />
       {/* NAV */}
+      <Seo />
       <header
-        className={`sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/60 ${scrolled ? "bg-white/70 shadow-sm" : "bg-transparent"}`}
+        className={`sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/60 ${
+          scrolled ? "bg-white/70 shadow-sm" : "bg-transparent"
+        }`}
       >
         <div className="mx-auto max-w-7xl px-4">
           <div className="flex items-center justify-between py-3">
@@ -338,12 +471,7 @@ export default function Website() {
               </div>
             </div>
             <div className="relative">
-              <div className="relative mx-auto h-80 w-full max-w-md overflow-hidden rounded-3xl border border-emerald-900/10 bg-white shadow-xl">
-                {/* illustrative dashboard */}
-                <div className="grid grid-rows-3 gap-4 p-6">
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="rounded-xl bg-emerald-100/80 p-4">
-                      <div className="text-xs text-emerald-900/70">Time-to-hire</div>
+              <AgencySavingsCalculator />
                       <div className="mt-2 h-16 w-full rounded-lg bg-white" />
                     </div>
                     <div className="rounded-xl bg-emerald-100/80 p-4">
@@ -394,7 +522,13 @@ export default function Website() {
             </p>
             <div className="flex flex-wrap items-center gap-4 opacity-70">
               {/* Placeholder logo pills */}
-              {["Northbridge Capital","Atlas Health","Keystone Tech","Stratum FinOps","Vector Labs"].map((n) => (
+              {[
+                "Northbridge Capital",
+                "Atlas Health",
+                "Keystone Tech",
+                "Stratum FinOps",
+                "Vector Labs",
+              ].map((n) => (
                 <span
                   key={n}
                   className="rounded-xl border border-emerald-900/10 bg-white px-3 py-1 text-xs"
