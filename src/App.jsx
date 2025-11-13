@@ -558,18 +558,21 @@ export default function Website() {
               Recruiter academies and hiring-manager certification—sourcing, assessment, and employer brand in modern practice.
             </ListItem>
 
-            <ListItem icon={Shield} title="Data &amp; Governance">
-              Metrics pack (TTH, quality-of-hire, funnel diagnostics), DEI safeguards, and compliance aligned to your regions.
-            </ListItem>
+         <ListItem icon={Shield} title="Data &amp; Governance">
+  Metrics pack (TTH, quality-of-hire, funnel diagnostics), DEI safeguards, and compliance aligned to your regions.
+</ListItem>
 
-            <ListItem icon={LineChart} title="Continuous Optimization">
-              Quarterly audits, retros, experiments, and coach-alongside support to keep outcomes improving.
-            </ListItem>
+<ListItem icon={LineChart} title="Continuous Optimization">
+  Quarterly audits, retros, experiments, and coach-alongside support to keep outcomes improving.
+</ListItem>
 
-            <ListItem icon={Brain} title="Advisory on Change &amp; Adoption">
-              Human-centered change so new ways of working actually stick—playbooks to practice to performance.
-            </ListItem>
-          </div>
+{/* spacer so Advisory sits under Data & Governance on md+ screens */}
+<div className="hidden md:block" aria-hidden />
+
+<ListItem icon={Brain} title="Advisory on Change &amp; Adoption">
+  Human-centered change so new ways of working actually stick—playbooks to practice to performance.
+</ListItem>
+
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <CTA />
