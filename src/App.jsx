@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   Check,
   ArrowRight,
@@ -19,8 +20,7 @@ import {
 } from "lucide-react";
 
 // Guild & Grove — Single-file React site
-// Tailwind ready. No external UI imports required.
-// Sections: Nav, Hero, Social Proof, Services, Approach, Outcomes, Programs, Resources, About, Contact, Footer
+// Sections: Nav, Hero (+ Calculator), Social Proof, Services, Approach, Outcomes, Programs, Resources, About, Contact, Footer
 
 const nav = [
   { label: "Services", href: "#services" },
@@ -94,10 +94,7 @@ const Badge = ({ children }) => (
 );
 
 const GradientBG = () => (
-  <div
-    aria-hidden
-    className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-  >
+  <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
     <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[40rem] w-[40rem] rounded-full bg-emerald-200/40 blur-3xl" />
     <div className="absolute -bottom-40 left-10 h-[28rem] w-[28rem] rounded-full bg-emerald-300/30 blur-3xl" />
     <div className="absolute -right-20 top-40 h-[24rem] w-[24rem] rounded-full bg-emerald-100 blur-3xl" />
@@ -110,18 +107,22 @@ const FooterLink = ({ href = "#", children }) => (
   </a>
 );
 
-// --- New: Agency Fees Savings Calculator (Hero card replacement)
+// --- Agency Fees Savings Calculator (Hero card replacement)
 const AgencySavingsCalculator = () => {
   const [hires, setHires] = useState(20);
   const [salary, setSalary] = useState(60000);
   const [percent, setPercent] = useState(20);
 
-  const safeInt = (v, def = 0) => {
+  const safeNum = (v, def = 0) => {
     const n = Number(v);
     return Number.isFinite(n) ? n : def;
   };
 
-  const fees = Math.max(0, safeInt(hires)) * Math.max(0, safeInt(salary)) * (Math.max(0, safeInt(percent)) / 100);
+  const fees =
+    Math.max(0, safeNum(hires)) *
+    Math.max(0, safeNum(salary)) *
+    (Math.max(0, safeNum(percent)) / 100);
+
   const savingsLow = fees * 0.4; // 40% reduction
   const savingsHigh = fees * 0.7; // 70% reduction
   const perHire = hires > 0 ? fees / hires : 0;
@@ -134,7 +135,10 @@ const AgencySavingsCalculator = () => {
     }).format(isFinite(n) ? n : 0);
 
   return (
-    <div id="agency-calc" className="relative mx-auto w-full max-w-md overflow-hidden rounded-3xl border border-emerald-900/10 bg-white shadow-xl">
+    <div
+      id="agency-calc"
+      className="relative mx-auto w-full max-w-md overflow-hidden rounded-3xl border border-emerald-900/10 bg-white shadow-xl"
+    >
       <div className="grid gap-4 p-6">
         <div className="flex items-center justify-between">
           <h3 className="text-base font-semibold text-emerald-900">Agency fees savings</h3>
@@ -207,10 +211,6 @@ const AgencySavingsCalculator = () => {
     </div>
   );
 };
-  <a href={href} className="text-sm text-emerald-100/80 hover:text-white">
-    {children}
-  </a>
-);
 
 const Logo = () => (
   <div className="flex items-center gap-2">
@@ -239,35 +239,17 @@ function useScroll() {
   return scrolled;
 }
 
-// Simple runtime "test cases" to validate structure after mount
+// Self-tests (non-blocking) to catch missing sections in dev
 function runSelfTests() {
-  const requiredIds = [
-    "services",
-    "approach",
-    "outcomes",
-    "programs",
-    "resources",
-    "about",
-    "contact",
-  ];
+  const requiredIds = ["services","approach","outcomes","programs","resources","about","contact"];
   requiredIds.forEach((id) => {
     // eslint-disable-next-line no-console
-    console.assert(
-      document.getElementById(id),
-      `Missing section #${id} (self-test)`
-    );
+    console.assert(document.getElementById(id), `Missing section #${id} (self-test)`);
   });
-  // Check contact form exists
   // eslint-disable-next-line no-console
-  console.assert(
-    document.querySelector("form"),
-    "Contact form not found (self-test)"
-  );
-  // Calculator present
-  console.assert(
-    document.getElementById("agency-calc"),
-    "Agency calculator missing (self-test)"
-  );
+  console.assert(document.querySelector("form"), "Contact form not found (self-test)");
+  // eslint-disable-next-line no-console
+  console.assert(document.getElementById("agency-calc"), "Agency calculator missing (self-test)");
 }
 
 // Lightweight SEO component without external deps
@@ -276,131 +258,122 @@ function Seo() {
     const setMeta = (selector, attr, value) => {
       let el = document.head.querySelector(selector);
       if (!el) {
-        el = document.createElement('meta');
+        el = document.createElement("meta");
         document.head.appendChild(el);
       }
       el.setAttribute(attr, value);
     };
 
-    const origin = window.location.origin || 'https://www.guildandgrove.com';
-    const canonicalHref = origin.endsWith('/') ? origin : origin + '/';
+    const origin = window.location.origin || "https://www.guildandgrove.com";
+    const canonicalHref = origin.endsWith("/") ? origin : origin + "/";
 
-    document.title = 'Guild & Grove | Grow in-house hiring mastery';
+    document.title = "Guild & Grove | Grow in-house hiring mastery";
 
-    // Viewport (important for mobile + CLS)
-    setMeta('meta[name="viewport"]', 'name', 'viewport');
-    setMeta('meta[name="viewport"]', 'content', 'width=device-width, initial-scale=1');
+    // Viewport
+    setMeta('meta[name="viewport"]', "name", "viewport");
+    setMeta('meta[name="viewport"]', "content", "width=device-width, initial-scale=1");
 
-    // Basic meta
-    setMeta('meta[name="description"]', 'name', 'description');
-    setMeta('meta[name="description"]', 'content', 'Guild & Grove is a people-strategy advisory that designs, builds, and upskills in-house recruitment so companies hire better—without agencies.');
+    // Description
+    setMeta('meta[name="description"]', "name", "description");
+    setMeta(
+      'meta[name="description"]',
+      "content",
+      "Guild & Grove is a people-strategy advisory that designs, builds, and upskills in-house recruitment so companies hire better—without agencies."
+    );
 
     // Canonical
     let linkCanonical = document.head.querySelector('link[rel="canonical"]');
     if (!linkCanonical) {
-      linkCanonical = document.createElement('link');
-      linkCanonical.setAttribute('rel', 'canonical');
+      linkCanonical = document.createElement("link");
+      linkCanonical.setAttribute("rel", "canonical");
       document.head.appendChild(linkCanonical);
     }
-    linkCanonical.setAttribute('href', canonicalHref);
+    linkCanonical.setAttribute("href", canonicalHref);
 
     // Open Graph
-    const ogPairs = [
-      ['og:title', 'Guild & Grove | Grow in-house hiring mastery'],
-      ['og:description', 'We build self-sustaining recruitment capability: operating model, training, and governance.'],
-      ['og:type', 'website'],
-      ['og:url', canonicalHref],
-    ];
-    ogPairs.forEach(([property, content]) => {
+    [
+      ["og:title", "Guild & Grove | Grow in-house hiring mastery"],
+      ["og:description", "We build self-sustaining recruitment capability: operating model, training, and governance."],
+      ["og:type", "website"],
+      ["og:url", canonicalHref],
+    ].forEach(([property, content]) => {
       let el = document.head.querySelector(`meta[property="${property}"]`);
-      if (!el) { el = document.createElement('meta'); document.head.appendChild(el); }
-      el.setAttribute('property', property);
-      el.setAttribute('content', content);
+      if (!el) { el = document.createElement("meta"); document.head.appendChild(el); }
+      el.setAttribute("property", property);
+      el.setAttribute("content", content);
     });
 
-    // Twitter Card
-    const twPairs = [
-      ['twitter:card', 'summary_large_image'],
-      ['twitter:title', 'Guild & Grove | Grow in-house hiring mastery'],
-      ['twitter:description', 'Design the system. Train the people. Govern the outcomes.'],
-    ];
-    twPairs.forEach(([name, content]) => {
+    // Twitter
+    [
+      ["twitter:card", "summary_large_image"],
+      ["twitter:title", "Guild & Grove | Grow in-house hiring mastery"],
+      ["twitter:description", "Design the system. Train the people. Govern the outcomes."],
+    ].forEach(([name, content]) => {
       let el = document.head.querySelector(`meta[name="${name}"]`);
-      if (!el) { el = document.createElement('meta'); document.head.appendChild(el); }
-      el.setAttribute('name', name);
-      el.setAttribute('content', content);
+      if (!el) { el = document.createElement("meta"); document.head.appendChild(el); }
+      el.setAttribute("name", name);
+      el.setAttribute("content", content);
     });
 
-    // Optional: sitemap link relation (engines usually discover via robots.txt)
+    // Sitemap link (optional)
     let linkSitemap = document.head.querySelector('link[rel="sitemap"]');
     if (!linkSitemap) {
-      linkSitemap = document.createElement('link');
-      linkSitemap.setAttribute('rel', 'sitemap');
+      linkSitemap = document.createElement("link");
+      linkSitemap.setAttribute("rel", "sitemap");
       document.head.appendChild(linkSitemap);
     }
-    linkSitemap.setAttribute('type', 'application/xml');
-    linkSitemap.setAttribute('href', canonicalHref + 'sitemap.xml');
+    linkSitemap.setAttribute("type", "application/xml");
+    linkSitemap.setAttribute("href", canonicalHref + "sitemap.xml");
 
-    // JSON-LD (Organization + Website)
+    // JSON-LD
     const jsonLd = {
-      '@context': 'https://schema.org',
-      '@graph': [
+      "@context": "https://schema.org",
+      "@graph": [
         {
-          '@type': 'Organization',
-          name: 'Guild & Grove',
+          "@type": "Organization",
+          name: "Guild & Grove",
           url: canonicalHref,
-          email: 'hello@guildandgrove.com',
-          address: {
-            '@type': 'PostalAddress',
-            addressLocality: 'London',
-            addressCountry: 'GB',
-          },
+          email: "hello@guildandgrove.com",
+          address: { "@type": "PostalAddress", addressLocality: "London", addressCountry: "GB" },
           sameAs: [],
-          slogan: 'Grow in-house hiring mastery',
+          slogan: "Grow in-house hiring mastery",
         },
         {
-          '@type': 'WebSite',
-          name: 'Guild & Grove',
+          "@type": "WebSite",
+          name: "Guild & Grove",
           url: canonicalHref,
           potentialAction: {
-            '@type': 'SearchAction',
-            target: canonicalHref + '?q={search_term_string}',
-            'query-input': 'required name=search_term_string',
+            "@type": "SearchAction",
+            target: canonicalHref + "?q={search_term_string}",
+            "query-input": "required name=search_term_string",
           },
         },
       ],
     };
-    let ldScript = document.getElementById('gg-jsonld');
+    let ldScript = document.getElementById("gg-jsonld");
     if (!ldScript) {
-      ldScript = document.createElement('script');
-      ldScript.type = 'application/ld+json';
-      ldScript.id = 'gg-jsonld';
+      ldScript = document.createElement("script");
+      ldScript.type = "application/ld+json";
+      ldScript.id = "gg-jsonld";
       document.head.appendChild(ldScript);
     }
     ldScript.textContent = JSON.stringify(jsonLd);
 
-    // Robots (advisory; final robots.txt should be at /robots.txt)
-    setMeta('meta[name="robots"]', 'name', 'robots');
-    setMeta('meta[name="robots"]', 'content', 'index,follow');
-
-    // (Optional) font preloads if you host fonts at /fonts/**
-    // const preload = (href, as) => { const l = document.createElement('link'); l.rel = 'preload'; l.as = as; l.href = href; document.head.appendChild(l); };
-    // preload('/fonts/Inter-Variable.woff2', 'font');
-    // preload('/fonts/LibreBaskerville-Regular.woff2', 'font');
+    // Robots
+    setMeta('meta[name="robots"]', "name", "robots");
+    setMeta('meta[name="robots"]', "content", "index,follow");
   }, []);
   return null;
 }
 
 export default function Website() {
   const scrolled = useScroll();
-  useEffect(() => {
-    runSelfTests();
-  }, []);
+  useEffect(() => { runSelfTests(); }, []);
 
   return (
     <div className="min-h-screen bg-[#E6DECF] text-emerald-950">
-      {/* NAV */}
       <Seo />
+      {/* NAV */}
       <header
         className={`sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/60 ${
           scrolled ? "bg-white/70 shadow-sm" : "bg-transparent"
@@ -413,11 +386,7 @@ export default function Website() {
             </a>
             <nav className="hidden gap-6 md:flex" aria-label="Primary">
               {nav.map((n) => (
-                <a
-                  key={n.href}
-                  href={n.href}
-                  className="text-sm font-medium text-emerald-900/90 hover:text-emerald-900"
-                >
+                <a key={n.href} href={n.href} className="text-sm font-medium text-emerald-900/90 hover:text-emerald-900">
                   {n.label}
                 </a>
               ))}
@@ -436,15 +405,9 @@ export default function Website() {
           <div className="grid items-center gap-10 md:grid-cols-2">
             <div>
               <div className="mb-4 flex flex-wrap items-center gap-2">
-                <Pill>
-                  <Shield className="h-4 w-4" /> Governed &amp; fair
-                </Pill>
-                <Pill>
-                  <Gauge className="h-4 w-4" /> Measured improvement
-                </Pill>
-                <Pill>
-                  <Users className="h-4 w-4" /> Capability &gt; dependency
-                </Pill>
+                <Pill><Shield className="h-4 w-4" /> Governed &amp; fair</Pill>
+                <Pill><Gauge className="h-4 w-4" /> Measured improvement</Pill>
+                <Pill><Users className="h-4 w-4" /> Capability &gt; dependency</Pill>
               </div>
               <h1 className="font-serif text-4xl leading-tight sm:text-5xl md:text-6xl">
                 Build a self-sustaining recruitment engine.
@@ -456,10 +419,7 @@ export default function Website() {
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <CTA />
                 <Secondary />
-                <a
-                  href="#video"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-emerald-900/80 hover:text-emerald-900"
-                >
+                <a href="#video" className="inline-flex items-center gap-2 text-sm font-medium text-emerald-900/80 hover:text-emerald-900">
                   <PlayCircle className="h-5 w-5" /> See a 90-second overview
                 </a>
               </div>
@@ -469,39 +429,10 @@ export default function Website() {
                 <Stat value="15–25pts" label="↑ Hiring Manager NPS" />
               </div>
             </div>
+
+            {/* Replace hero card with calculator */}
             <div className="relative">
               <AgencySavingsCalculator />
-                      <div className="mt-2 h-16 w-full rounded-lg bg-white" />
-                    </div>
-                    <div className="rounded-xl bg-emerald-100/80 p-4">
-                      <div className="text-xs text-emerald-900/70">Acceptance</div>
-                      <div className="mt-2 h-16 w-full rounded-lg bg-white" />
-                    </div>
-                    <div className="rounded-xl bg-emerald-100/80 p-4">
-                      <div className="text-xs text-emerald-900/70">Manager NPS</div>
-                      <div className="mt-2 h-16 w-full rounded-lg bg-white" />
-                    </div>
-                  </div>
-                  <div className="rounded-xl bg-emerald-50 p-5 ring-1 ring-emerald-700/10">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium">Recruitment SLAs</span>
-                      <Badge>On track</Badge>
-                    </div>
-                    <ul className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                      <CheckRow>Intake to shortlist ≤ 7 days</CheckRow>
-                      <CheckRow>Structured interviews 100%</CheckRow>
-                      <CheckRow>Feedback turnaround ≤ 48h</CheckRow>
-                      <CheckRow>Offer approvals in 24h</CheckRow>
-                    </ul>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 text-xs">
-                    <Badge>Data &amp; Governance</Badge>
-                    <Badge>Capability Uplift</Badge>
-                    <Badge>Operating Model</Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="pointer-events-none absolute -bottom-4 -left-4 -z-10 h-40 w-40 rounded-3xl bg-emerald-300/40 blur-2xl" />
             </div>
           </div>
         </div>
@@ -516,24 +447,10 @@ export default function Website() {
       <section className="border-y border-emerald-900/10 bg-white/60">
         <div className="mx-auto max-w-7xl px-4 py-10">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <p className="text-sm text-emerald-900/70">
-              Trusted by people-first teams to hire 3× faster
-            </p>
+            <p className="text-sm text-emerald-900/70">Trusted by people-first teams to hire 3× faster</p>
             <div className="flex flex-wrap items-center gap-4 opacity-70">
-              {/* Placeholder logo pills */}
-              {[
-                "Northbridge Capital",
-                "Atlas Health",
-                "Keystone Tech",
-                "Stratum FinOps",
-                "Vector Labs",
-              ].map((n) => (
-                <span
-                  key={n}
-                  className="rounded-xl border border-emerald-900/10 bg-white px-3 py-1 text-xs"
-                >
-                  {n}
-                </span>
+              {["Northbridge Capital","Atlas Health","Keystone Tech","Stratum FinOps","Vector Labs"].map((n) => (
+                <span key={n} className="rounded-xl border border-emerald-900/10 bg-white px-3 py-1 text-xs">{n}</span>
               ))}
             </div>
           </div>
@@ -545,36 +462,27 @@ export default function Website() {
         <div className="mx-auto max-w-7xl px-4 py-16">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Services</h2>
-            <p className="mt-3 text-emerald-900/80">
-              Strategy-first, non-agency support. We build capability, not
-              dependency.
-            </p>
+            <p className="mt-3 text-emerald-900/80">Strategy-first, non-agency support. We build capability, not dependency.</p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             <ListItem icon={Layers} title="Operating Model &amp; Process Design">
-              Role charters, RACI, structured intake, interviewing discipline,
-              decision rights, offer stages, SLAs—codified and adopted.
+              Role charters, RACI, structured intake, interviewing discipline, decision rights, offer stages, SLAs—codified and adopted.
             </ListItem>
             <ListItem icon={Hammer} title="Recruitment-in-a-Box (90 days)">
-              Stand up an in-house function fast: ATS setup, templates,
-              playbooks, interview kits, and hiring-manager training.
+              Stand up an in-house function fast: ATS setup, templates, playbooks, interview kits, and hiring-manager training.
             </ListItem>
             <ListItem icon={BookOpen} title="Capability Uplift">
-              Recruiter academies and hiring-manager certification—sourcing,
-              assessment, and employer brand in modern practice.
+              Recruiter academies and hiring-manager certification—sourcing, assessment, and employer brand in modern practice.
             </ListItem>
             <ListItem icon={Shield} title="Data &amp; Governance">
-              Metrics pack (TTH, quality-of-hire, funnel diagnostics), DEI
-              safeguards, and compliance aligned to your regions.
+              Metrics pack (TTH, quality-of-hire, funnel diagnostics), DEI safeguards, and compliance aligned to your regions.
             </ListItem>
             <ListItem icon={LineChart} title="Continuous Optimization">
-              Quarterly audits, retros, experiments, and coach-alongside support
-              to keep outcomes improving.
+              Quarterly audits, retros, experiments, and coach-alongside support to keep outcomes improving.
             </ListItem>
             <ListItem icon={Brain} title="Advisory on Change &amp; Adoption">
-              Human-centered change so new ways of working actually stick—playbooks
-              to practice to performance.
+              Human-centered change so new ways of working actually stick—playbooks to practice to performance.
             </ListItem>
           </div>
 
@@ -590,25 +498,14 @@ export default function Website() {
         <div className="mx-auto max-w-7xl px-4 py-16">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Approach</h2>
-            <p className="mt-3 text-emerald-900/80">
-              Diagnose → Design → Enable → Govern. We leave you with skills, not
-              dependencies.
-            </p>
+            <p className="mt-3 text-emerald-900/80">Diagnose → Design → Enable → Govern. We leave you with skills, not dependencies.</p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-4">
-            <ListItem icon={Compass} title="Diagnose">
-              Baseline metrics, process map, pain points, and benchmarks.
-            </ListItem>
-            <ListItem icon={Layers} title="Design">
-              Operating model, governance, toolchain, interview architecture.
-            </ListItem>
-            <ListItem icon={Users} title="Enable">
-              Training, coaching, and change management for adoption.
-            </ListItem>
-            <ListItem icon={Cog} title="Govern">
-              SLAs, dashboards, reviews, and iteration cadence.
-            </ListItem>
+            <ListItem icon={Compass} title="Diagnose">Baseline metrics, process map, pain points, and benchmarks.</ListItem>
+            <ListItem icon={Layers} title="Design">Operating model, governance, toolchain, interview architecture.</ListItem>
+            <ListItem icon={Users} title="Enable">Training, coaching, and change management for adoption.</ListItem>
+            <ListItem icon={Cog} title="Govern">SLAs, dashboards, reviews, and iteration cadence.</ListItem>
           </div>
         </div>
       </section>
@@ -618,9 +515,7 @@ export default function Website() {
         <div className="mx-auto max-w-7xl px-4 py-16">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Outcomes</h2>
-            <p className="mt-3 text-emerald-900/80">
-              What we measure and improve—then hand over for you to own.
-            </p>
+            <p className="mt-3 text-emerald-900/80">What we measure and improve—then hand over for you to own.</p>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             <div className="rounded-2xl border border-emerald-900/10 bg-white/60 p-6">
@@ -653,9 +548,7 @@ export default function Website() {
         <div className="mx-auto max-w-7xl px-4 py-16">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Programs</h2>
-            <p className="mt-3 text-emerald-900/80">
-              Choose the engagement that fits your stage and scale.
-            </p>
+            <p className="mt-3 text-emerald-900/80">Choose the engagement that fits your stage and scale.</p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -664,8 +557,7 @@ export default function Website() {
               <Badge>Lead-in</Badge>
               <h4 className="mt-2 font-semibold">Free Recruitment Audit</h4>
               <p className="mt-2 text-sm text-emerald-900/80">
-                60-minute review + 1-page findings: bottlenecks, quick wins, and a
-                prioritized roadmap.
+                60-minute review + 1-page findings: bottlenecks, quick wins, and a prioritized roadmap.
               </p>
               <ul className="mt-4 space-y-2">
                 <CheckRow>Process map &amp; funnel snapshot</CheckRow>
@@ -682,8 +574,7 @@ export default function Website() {
               <Badge>Project</Badge>
               <h4 className="mt-2 font-semibold">Core Transformation (6–12 weeks)</h4>
               <p className="mt-2 text-sm text-emerald-900/80">
-                Diagnose, Design, Enable. Stand-up or overhaul your in-house
-                function with measurable SLAs.
+                Diagnose, Design, Enable. Stand-up or overhaul your in-house function with measurable SLAs.
               </p>
               <ul className="mt-4 space-y-2">
                 <CheckRow>Operating model &amp; governance</CheckRow>
@@ -700,8 +591,7 @@ export default function Website() {
               <Badge>Retainer</Badge>
               <h4 className="mt-2 font-semibold">Quarterly Stewardship</h4>
               <p className="mt-2 text-sm text-emerald-900/80">
-                Ongoing metrics reviews, experiments, and coaching to sustain and
-                extend gains.
+                Ongoing metrics reviews, experiments, and coaching to sustain and extend gains.
               </p>
               <ul className="mt-4 space-y-2">
                 <CheckRow>Quarterly audits &amp; roadmap</CheckRow>
@@ -721,37 +611,20 @@ export default function Website() {
         <div className="mx-auto max-w-7xl px-4 py-16">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Resources</h2>
-            <p className="mt-3 text-emerald-900/80">
-              Playbooks, templates, and case notes to put mastery into practice.
-            </p>
+            <p className="mt-3 text-emerald-900/80">Playbooks, templates, and case notes to put mastery into practice.</p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {[
-              {
-                title: "Structured Interview Kit",
-                desc: "Role scorecards, questions, rubrics, and decision logs.",
-              },
-              {
-                title: "Recruitment Metrics Pack",
-                desc: "Dashboards for TTH, funnel, quality-of-hire, and NPS.",
-              },
-              {
-                title: "Operating Model Blueprint",
-                desc: "RACI, SLAs, intake flow, and governance cadence.",
-              },
+              { title: "Structured Interview Kit", desc: "Role scorecards, questions, rubrics, and decision logs." },
+              { title: "Recruitment Metrics Pack", desc: "Dashboards for TTH, funnel, quality-of-hire, and NPS." },
+              { title: "Operating Model Blueprint", desc: "RACI, SLAs, intake flow, and governance cadence." },
             ].map((r) => (
-              <div
-                key={r.title}
-                className="rounded-2xl border border-emerald-900/10 bg-white/60 p-6"
-              >
+              <div key={r.title} className="rounded-2xl border border-emerald-900/10 bg-white/60 p-6">
                 <h4 className="font-semibold">{r.title}</h4>
                 <p className="mt-2 text-sm text-emerald-900/80">{r.desc}</p>
                 <div className="mt-4">
-                  <a
-                    href="#contact"
-                    className="inline-flex items-center gap-2 text-sm font-medium text-emerald-900/90 hover:text-emerald-900"
-                  >
+                  <a href="#contact" className="inline-flex items-center gap-2 text-sm font-medium text-emerald-900/90 hover:text-emerald-900">
                     Request access <ArrowRight className="h-4 w-4" />
                   </a>
                 </div>
@@ -768,10 +641,8 @@ export default function Website() {
             <div>
               <h2 className="font-serif text-3xl sm:text-4xl">About Guild &amp; Grove</h2>
               <p className="mt-4 text-emerald-900/80">
-                We’re a people-strategy advisory focused on building in-house
-                recruitment capability. We bring operating discipline, practical
-                training, and governance so teams hire faster, fairer, and more
-                cost-effectively—sustainably.
+                We’re a people-strategy advisory focused on building in-house recruitment capability. We bring operating
+                discipline, practical training, and governance so teams hire faster, fairer, and more cost-effectively—sustainably.
               </p>
               <ul className="mt-6 space-y-3">
                 <CheckRow>Capability over dependency</CheckRow>
@@ -784,8 +655,7 @@ export default function Website() {
               <div className="relative overflow-hidden rounded-3xl border border-emerald-900/10 bg-gradient-to-br from-emerald-50 to-white p-8 shadow">
                 <h4 className="font-semibold">Our Promise</h4>
                 <p className="mt-2 text-sm text-emerald-900/80">
-                  We work transparently and leave behind capability: playbooks,
-                  trained people, and dashboards you own.
+                  We work transparently and leave behind capability: playbooks, trained people, and dashboards you own.
                 </p>
                 <div className="mt-6 grid grid-cols-3 gap-4 text-center">
                   <Stat value="90 days" label="Stand-up window" />
@@ -804,59 +674,36 @@ export default function Website() {
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-serif text-3xl sm:text-4xl">Book a Free Recruitment Audit</h2>
             <p className="mt-3 text-emerald-900/80">
-              Tell us about your hiring goals. We’ll review your process, surface
-              quick wins, and map a path to in-house mastery.
+              Tell us about your hiring goals. We’ll review your process, surface quick wins, and map a path to in-house mastery.
             </p>
           </div>
 
           <div className="mt-10 grid gap-8 md:grid-cols-2">
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="rounded-2xl border border-emerald-900/10 bg-white/70 p-6 shadow-sm"
-            >
+            <form onSubmit={(e) => e.preventDefault()} className="rounded-2xl border border-emerald-900/10 bg-white/70 p-6 shadow-sm">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="text-sm font-medium">First name</label>
-                  <input
-                    className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
-                    placeholder="Alex"
-                  />
+                  <input className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" placeholder="Alex" />
                 </div>
                 <div>
                   <label className="text-sm font-medium">Last name</label>
-                  <input
-                    className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
-                    placeholder="Morgan"
-                  />
+                  <input className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" placeholder="Morgan" />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-sm font-medium">Work email</label>
-                  <input
-                    type="email"
-                    className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
-                    placeholder="alex@company.com"
-                  />
+                  <input type="email" className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" placeholder="alex@company.com" />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-sm font-medium">Company</label>
-                  <input
-                    className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
-                    placeholder="Company Name"
-                  />
+                  <input className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" placeholder="Company Name" />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-sm font-medium">What would you like to improve?</label>
-                  <textarea
-                    rows={4}
-                    className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
-                    placeholder="Time-to-hire, agency spend, manager experience, DEI safeguards, etc."
-                  />
+                  <textarea rows={4} className="mt-1 w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" placeholder="Time-to-hire, agency spend, manager experience, DEI safeguards, etc." />
                 </div>
               </div>
               <div className="mt-4 flex items-center justify-between">
-                <div className="text-xs text-emerald-900/70">
-                  By submitting, you agree to our privacy policy.
-                </div>
+                <div className="text-xs text-emerald-900/70">By submitting, you agree to our privacy policy.</div>
                 <button className="inline-flex items-center gap-2 rounded-2xl bg-emerald-700 px-5 py-2.5 text-white shadow-sm transition hover:bg-emerald-800">
                   Send request <ArrowRight className="h-4 w-4" />
                 </button>
@@ -875,9 +722,7 @@ export default function Website() {
                 <Mail className="h-5 w-5 text-emerald-700" />
                 <div>
                   <div className="text-sm font-medium">Email</div>
-                  <a className="text-sm text-emerald-900/70" href="mailto:hello@guildandgrove.com">
-                    hello@guildandgrove.com
-                  </a>
+                  <a className="text-sm text-emerald-900/70" href="mailto:hello@guildandgrove.com">hello@guildandgrove.com</a>
                 </div>
               </div>
               <div className="mt-4 flex items-center gap-3">
@@ -890,18 +735,10 @@ export default function Website() {
 
               <div className="mt-8 rounded-xl bg-emerald-50 p-5 ring-1 ring-emerald-700/10">
                 <div className="text-sm font-semibold">Newsletter</div>
-                <p className="mt-1 text-sm text-emerald-900/80">
-                  Insights on strategic hiring—monthly. No spam.
-                </p>
+                <p className="mt-1 text-sm text-emerald-900/80">Insights on strategic hiring—monthly. No spam.</p>
                 <form onSubmit={(e) => e.preventDefault()} className="mt-3 flex gap-2">
-                  <input
-                    type="email"
-                    placeholder="you@company.com"
-                    className="w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring"
-                  />
-                  <button className="rounded-xl bg-emerald-700 px-4 py-2 text-white hover:bg-emerald-800">
-                    Subscribe
-                  </button>
+                  <input type="email" placeholder="you@company.com" className="w-full rounded-xl border border-emerald-900/20 bg-white px-3 py-2 outline-none ring-emerald-600 focus:ring" />
+                  <button className="rounded-xl bg-emerald-700 px-4 py-2 text-white hover:bg-emerald-800">Subscribe</button>
                 </form>
               </div>
             </div>
@@ -924,8 +761,7 @@ export default function Website() {
                 </div>
               </div>
               <p className="mt-3 text-sm text-white/80 max-w-xs">
-                People-strategy advisory that designs, builds, and upskills
-                in-house recruitment so you hire better—without agencies.
+                People-strategy advisory that designs, builds, and upskills in-house recruitment so you hire better—without agencies.
               </p>
             </div>
             <div>
